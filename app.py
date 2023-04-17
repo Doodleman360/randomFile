@@ -23,7 +23,7 @@ def random_file():
     if len(files) == 0:
         convertFiles()
         return "try again"
-    return send_file(random.choice(files), mimetype="audio/ogg", as_attachment=True)
+    return send_file(random.choice(files), mimetype="audio/mp3", as_attachment=True)
 
 
 def convertFiles():
