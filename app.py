@@ -23,9 +23,6 @@ def random_file():
         for file in f:
             if ".mp3" in file:
                 files.append(os.path.join(r, file))
-    if len(files) == 0:
-        convertFiles()
-        return "try again"
     return send_file(random.choice(files), mimetype="audio/mp3", as_attachment=True)
 
 
@@ -43,7 +40,9 @@ def convertFiles():
     for file in files:
         ogg = AudioSegment.from_ogg(file)
         ogg.export(file.replace(".ogg", ".mp3"), format="mp3")
+        os.remove(file)
 
 
+convertFiles()
 if __name__ == "__main__":
     app.run()
