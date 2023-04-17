@@ -22,7 +22,7 @@ def random_file():
         return f.read()
 
 
-@app.route("/")
+@app.route("/randAudio")
 def index():
     """
     Returns the index.html file
