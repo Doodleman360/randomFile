@@ -21,7 +21,7 @@ Type=simple
 Restart=always
 User=pi
 WorkingDirectory=/home/pi/git/randomFile/
-ExecStart=/home/pi/git/randomFile/bin/gunicorn -w 4 -m 007 --timeout 100000 --bind 127.0.0.1:8003 app:app
+ExecStart=/home/pi/git/randomFile/venv/bin/gunicorn -w 4 -m 007 --timeout 100000 --bind 127.0.0.1:8003 app:app
 
 [Install]
 WantedBy=multi-user.target
