@@ -1,4 +1,6 @@
 # flask app to serve a random file from a directory
+import base64
+
 from flask import Flask, render_template
 import os
 import random
@@ -19,15 +21,11 @@ def random_file():
             if ".ogg" in file:
                 files.append(os.path.join(r, file))
     with open(random.choice(files), "rb") as f:
-        return f.read()
-
-
-@app.route("/randAudio")
-def index():
-    """
-    Returns the index.html file
-    """
-    return render_template("index.html")
+        # convert file to base64 string
+        data = f.read()
+        data = base64.b64encode(data)
+        data = data.decode("utf-8")
+        return data
 
 
 if __name__ == "__main__":
