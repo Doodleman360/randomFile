@@ -9,10 +9,26 @@ import string
 app = Flask(__name__, template_folder="templates")
 
 
-@app.route("/audio")
+@app.route("/audio.mp3")
 def random_file():
     """
-    Returns a random .ogg file from a directory inducting subdirectories
+    Returns a random .mp3 file from a directory inducting subdirectories
+    """
+    path = "data/"
+    files = []
+    for r, d, f in os.walk(path):
+        for file in f:
+            if ".mp3" in file:
+                files.append(os.path.join(r, file))
+    if len(files) == 0:
+        convertFiles()
+        return "try again"
+    return send_file(random.choice(files), mimetype="audio/ogg", as_attachment=True)
+
+
+def convertFiles():
+    """
+    Converts all .ogg files in a directory to .mp3
     """
     path = "data/"
     files = []
@@ -21,7 +37,10 @@ def random_file():
             if ".ogg" in file:
                 files.append(os.path.join(r, file))
 
-    return send_file(random.choice(files), mimetype="audio/ogg", as_attachment=True)
+    for file in files:
+        ogg = AudioSegment.from_ogg(file)
+        ogg.export(file.replace(".ogg", ".mp3"), format="mp3")
+
 
 
 if __name__ == "__main__":
