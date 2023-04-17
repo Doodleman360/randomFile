@@ -7,7 +7,7 @@ import string
 app = Flask(__name__, template_folder="templates")
 
 
-@app.route("/a")
+@app.route("/audio")
 def random_file():
     """
     Returns a random .ogg file from a directory inducting subdirectories
