@@ -1,5 +1,5 @@
 # flask app to serve a random file from a directory
-import base64
+from pydub import AudioSegment
 
 from flask import Flask, render_template
 import os
@@ -21,11 +21,12 @@ def random_file():
             if ".ogg" in file:
                 files.append(os.path.join(r, file))
     with open(random.choice(files), "rb") as f:
-        # convert file to base64 string
-        data = f.read()
-        data = base64.b64encode(data)
-        data = data.decode("utf-8")
-        return data
+        # convert ogg file to mp3
+        ogg = AudioSegment.from_ogg(f)
+        mp3 = ogg.export(format="mp3")
+        return mp3.read()
+
+
 
 
 if __name__ == "__main__":
