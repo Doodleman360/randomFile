@@ -1,7 +1,7 @@
 # flask app to serve a random file from a directory
 from pydub import AudioSegment
 
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, request, send_file
 import os
 import random
 import string
@@ -14,7 +14,10 @@ def random_file():
     """
     Returns a random .mp3 file from a directory inducting subdirectories
     """
+    directory = request.args.get('directory', default='data', type=str)
     path = "data/"
+    if directory == "julien":
+        path = "julien/"
     files = []
     for r, d, f in os.walk(path):
         for file in f:
@@ -40,7 +43,6 @@ def convertFiles():
     for file in files:
         ogg = AudioSegment.from_ogg(file)
         ogg.export(file.replace(".ogg", ".mp3"), format="mp3")
-
 
 
 if __name__ == "__main__":
