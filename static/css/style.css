@@ -1,0 +1,81 @@
+.file-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.accordion-button {
+    padding: 0.5rem 1rem;
+}
+
+.flash-messages {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+/* Tree View Styles */
+.tree {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.tree-item {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.tree-item-content {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.tree-item-content:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tree-item-content.active {
+    background-color: rgba(13, 110, 253, 0.25);
+}
+
+.tree-toggle {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    margin-right: 5px;
+}
+
+.tree-children {
+    margin-left: 25px;
+    display: none;
+}
+
+.tree-children.show {
+    display: block;
+}
+
+.tree-icon {
+    margin-right: 5px;
+}
+
+.tree-label {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-icon {
+    color: #ffc107;
+}
+
+.folder-icon {
+    color: #0d6efd;
+}

@@ -13,77 +13,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <style>
-        .file-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .accordion-button {
-            padding: 0.5rem 1rem;
-        }
-        .flash-messages {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1050;
-        }
-
-        /* Tree View Styles */
-        .tree {
-            margin: 0;
-            padding: 0;
-            list-style-type: none;
-        }
-        .tree-item {
-            margin: 0;
-            padding: 0;
-            list-style-type: none;
-        }
-        .tree-item-content {
-            display: flex;
-            align-items: center;
-            padding: 6px 8px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .tree-item-content:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .tree-item-content.active {
-            background-color: rgba(13, 110, 253, 0.25);
-        }
-        .tree-toggle {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            text-align: center;
-            line-height: 20px;
-            margin-right: 5px;
-        }
-        .tree-children {
-            margin-left: 25px;
-            display: none;
-        }
-        .tree-children.show {
-            display: block;
-        }
-        .tree-icon {
-            margin-right: 5px;
-        }
-        .tree-label {
-            flex-grow: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .file-icon {
-            color: #ffc107;
-        }
-        .folder-icon {
-            color: #0d6efd;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <!-- Flash Messages -->
@@ -113,10 +43,7 @@
                         <a class="nav-link active" aria-current="page"
                            href="{{ url_for('main.browse', subpath='') }}">Browse</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.view_tasks') }}">Tasks</a>
-                    </li>
-                {% set ns = namespace(subpath = "") %}
+                    {% set ns = namespace(subpath = "") %}
                     {% for part in path_parts %}
                         {% if loop.index > 1 %}
                             {% set ns.subpath = ns.subpath + "/" %}
@@ -124,7 +51,8 @@
                         {% set ns.subpath = ns.subpath + part %}
                         <span class="navbar-text">></span>
                         <li class="nav-item">
-                            <a class="nav-link{% if loop.last %} active{% endif %}" href="{{ url_for('main.browse', subpath=ns.subpath) }}">{{ part }}</a>
+                            <a class="nav-link{% if loop.last %} active{% endif %}"
+                               href="{{ url_for('main.browse', subpath=ns.subpath) }}">{{ part }}</a>
                         </li>
                     {% endfor %}
                 </ul>
@@ -134,7 +62,7 @@
 
     <div class="container mt-3">
         <!-- Current Path for Forms -->
-        {% set current_path = '/'.join(path_parts) %}
+        {% set current_path = '\\'.join(path_parts) %}
 
         <!-- File Operations Buttons -->
         <div class="mb-4">
@@ -154,14 +82,14 @@
             <div class="card-body">
                 <div class="row">
                     <!-- Tree View -->
-                    <div class="col-md-4">
+                    <div class="col-md-12">
                         <div class="mb-3">
                             <h6>Directory Structure</h6>
                             <ul class="tree" id="directoryTree">
                                 {% macro render_tree_node(node, current_path) %}
                                     <li class="tree-item">
-                                        <div class="tree-item-content {% if node.path == current_path %}active{% endif %}" 
-                                             data-path="{{ node.path }}" 
+                                        <div class="tree-item-content {% if node.path == current_path %}active{% endif %}"
+                                             data-path="{{ node.path }}"
                                              data-type="{{ node.type }}">
                                             {% if node.type == 'directory' and node.children|length > 0 %}
                                                 <span class="tree-toggle">+</span>
@@ -188,7 +116,8 @@
                             </ul>
                         </div>
                     </div>
-
+                </div>
+                <div class="row">
                     <!-- Content View -->
                     <div class="col-md-8">
                         <div class="mb-3">
@@ -203,17 +132,17 @@
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <span>{{ file.split('\\')[-1] }}</span>
                                                 <div class="file-actions">
-                                                    <button class="btn btn-sm btn-danger" 
+                                                    <button class="btn btn-sm btn-danger"
                                                             onclick="confirmDelete('{{ file }}')">
                                                         Delete
                                                     </button>
-                                                    <button class="btn btn-sm btn-warning" 
+                                                    <button class="btn btn-sm btn-warning"
                                                             onclick="showMoveModal('{{ file }}')">
                                                         Move
                                                     </button>
                                                 </div>
                                             </div>
-                                            <audio controls class="w-100" 
+                                            <audio controls class="w-100"
                                                    src="{{ url_for('audio.random_file', subpath=file, static=true) }}">
                                             </audio>
                                         </li>
@@ -313,7 +242,7 @@
                 </div>
                 <form action="{{ url_for('main.move_file_route') }}" method="post" id="moveForm">
                     <div class="modal-body">
-                        <p>Select destination for file: <span id="moveFileName"></span></p>
+                        <p>Select the destination for the file: <span id="moveFileName"></span></p>
                         <div class="mb-3">
                             <label for="destination" class="form-label">Destination Directory</label>
                             <select class="form-select" id="destination" name="destination" required>
@@ -334,91 +263,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
-
-    <script>
-        // Function to confirm file deletion
-        function confirmDelete(filePath) {
-            document.getElementById('deleteFilePath').value = filePath;
-            document.getElementById('deleteFileName').textContent = filePath.split('\\').pop();
-            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            deleteModal.show();
-        }
-
-        // Function to show move file modal
-        function showMoveModal(filePath) {
-            document.getElementById('moveFilePath').value = filePath;
-            document.getElementById('moveFileName').textContent = filePath.split('\\').pop();
-
-            // Fetch directories for the dropdown
-            fetch('{{ url_for("main.get_directories") }}')
-                .then(response => response.json())
-                .then(data => {
-                    const select = document.getElementById('destination');
-                    select.innerHTML = '';
-
-                    // Add root directory option
-                    const rootOption = document.createElement('option');
-                    rootOption.value = '';
-                    rootOption.textContent = 'Root Directory';
-                    select.appendChild(rootOption);
-
-                    // Add all directories
-                    data.directories.forEach(dir => {
-                        const option = document.createElement('option');
-                        option.value = dir;
-                        option.textContent = dir;
-                        select.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching directories:', error);
-                });
-
-            const moveModal = new bootstrap.Modal(document.getElementById('moveModal'));
-            moveModal.show();
-        }
-
-        // Tree view functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle tree item clicks
-            document.querySelectorAll('.tree-item-content').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    const path = this.getAttribute('data-path');
-                    const type = this.getAttribute('data-type');
-                    const toggle = this.querySelector('.tree-toggle');
-
-                    // If clicking on the toggle button or if it's a directory
-                    if (e.target === toggle || (type === 'directory' && toggle.textContent === '+' || toggle.textContent === '-')) {
-                        // Toggle the children visibility
-                        const children = this.nextElementSibling;
-                        if (children && children.classList.contains('tree-children')) {
-                            children.classList.toggle('show');
-                            toggle.textContent = children.classList.contains('show') ? '-' : '+';
-                        }
-                        e.stopPropagation(); // Prevent navigation
-                    } else {
-                        // Navigate to the path
-                        if (type === 'directory') {
-                            window.location.href = '{{ url_for("main.browse", subpath="") }}' + path;
-                        } else if (type === 'file') {
-                            // For files, we could play them directly or show details
-                            // For now, just navigate to the parent directory
-                            const parentPath = path.substring(0, path.lastIndexOf('\\'));
-                            window.location.href = '{{ url_for("main.browse", subpath="") }}' + parentPath;
-                        }
-                    }
-                });
-            });
-
-            // Auto-dismiss flash messages after 5 seconds
-            setTimeout(function() {
-                const alerts = document.querySelectorAll('.alert');
-                alerts.forEach(alert => {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                });
-            }, 5000);
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app, abort, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, current_app, abort, request, redirect, url_for, flash
 from pathlib import Path
 import os
 
@@ -7,10 +7,10 @@ from randomfile.utils.file_utils import (
     add_file, delete_file, move_file, create_directory,
     get_directory_tree
 )
-from randomfile.utils.task_utils import read_tasks_file, parse_tasks, update_task_status
 
 # Create blueprint
 main_bp = Blueprint('main', __name__)
+
 
 @main_bp.route("/browse/<path:subpath>")
 @main_bp.route("/browse/")
@@ -36,9 +36,9 @@ def browse(subpath=None):
         directory_tree = get_directory_tree(Path(base_path))
 
         return render_template(
-            "browse.html", 
-            files=files, 
-            path_parts=path_parts, 
+            "browse.html",
+            files=files,
+            path_parts=path_parts,
             directory_tree=directory_tree,
             current_path=str(os.path.relpath(path, base_path)) if path != base_path else ""
         )
@@ -50,32 +50,10 @@ def browse(subpath=None):
         current_app.logger.error(f"Error in browse route: {str(e)}")
         return abort(500, description="An unexpected error occurred")
 
-@main_bp.errorhandler(403)
-def forbidden_error(e):
-    """Custom error handler for 403 errors."""
-    return render_template('error.html', 
-                          error_code=403,
-                          error_message="Forbidden",
-                          error_description=str(e)), 403
-
-@main_bp.errorhandler(404)
-def not_found_error(e):
-    """Custom error handler for 404 errors."""
-    return render_template('error.html', 
-                          error_code=404,
-                          error_message="Not Found",
-                          error_description="The requested resource could not be found"), 404
-
-@main_bp.errorhandler(500)
-def internal_error(e):
-    """Custom error handler for 500 errors."""
-    return render_template('error.html', 
-                          error_code=500,
-                          error_message="Internal Server Error",
-                          error_description="An unexpected error occurred"), 500
 
 @main_bp.route("/upload", methods=["POST"])
 def upload_file():
+    # TODO: Look into this
     """
     Upload a file to the specified directory.
 
@@ -104,8 +82,10 @@ def upload_file():
 
     return redirect(url_for('main.browse', subpath=subpath))
 
+
 @main_bp.route("/delete", methods=["POST"])
 def delete_file_route():
+    # TODO: Look into this
     """
     Delete a file.
 
@@ -131,8 +111,10 @@ def delete_file_route():
     directory = os.path.dirname(file_path)
     return redirect(url_for('main.browse', subpath=directory))
 
+
 @main_bp.route("/move", methods=["POST"])
 def move_file_route():
+    # TODO: Look into this
     """
     Move a file to a different directory.
 
@@ -165,8 +147,10 @@ def move_file_route():
     directory = os.path.dirname(file_path)
     return redirect(url_for('main.browse', subpath=directory))
 
+
 @main_bp.route("/create_directory", methods=["POST"])
 def create_directory_route():
+    # TODO: Look into this
     """
     Create a new directory.
 
@@ -192,65 +176,29 @@ def create_directory_route():
 
     return redirect(url_for('main.browse', subpath=parent_path))
 
-@main_bp.route("/get_directories", methods=["GET"])
-def get_directories():
-    """
-    Get all directories for the move file dropdown.
 
-    Returns:
-        JSON response with directories
-    """
-    base_path = current_app.config['BASE_PATH']
-    all_dirs = []
+@main_bp.errorhandler(403)
+def forbidden_error(e):
+    """Custom error handler for 403 errors."""
+    return render_template('error.html',
+                           error_code=403,
+                           error_message="Forbidden",
+                           error_description=str(e)), 403
 
-    # Walk through all directories
-    for root, dirs, _ in os.walk(base_path):
-        for dir_name in dirs:
-            dir_path = os.path.join(root, dir_name)
-            rel_path = os.path.relpath(dir_path, base_path)
-            all_dirs.append(rel_path)
 
-    return jsonify({"directories": all_dirs})
+@main_bp.errorhandler(404)
+def not_found_error(e):
+    """Custom error handler for 404 errors."""
+    return render_template('error.html',
+                           error_code=404,
+                           error_message="Not Found",
+                           error_description="The requested resource could not be found"), 404
 
-@main_bp.route("/tasks")
-def view_tasks():
-    """
-    Display the tasks.md file with checkboxes to mark tasks as completed.
 
-    Returns:
-        str: Rendered HTML template
-    """
-    tasks_file_path = Path("docs/tasks.md")
-    content = read_tasks_file(tasks_file_path)
-    tasks = parse_tasks(content)
-
-    return render_template("tasks.html", tasks=tasks, raw_content=content)
-
-@main_bp.route("/tasks/update", methods=["POST"])
-def update_task():
-    """
-    Update the status of a task or subtask.
-
-    Returns:
-        JSON response with success status and message
-    """
-    task_number = request.form.get('task_number')
-    completed = request.form.get('completed') == 'true'
-    subtask_index = request.form.get('subtask_index')
-
-    if not task_number:
-        return jsonify({"success": False, "message": "Task number is required"}), 400
-
-    # Convert subtask_index to int if it's provided
-    if subtask_index:
-        try:
-            subtask_index = int(subtask_index)
-        except ValueError:
-            return jsonify({"success": False, "message": "Invalid subtask index"}), 400
-    else:
-        subtask_index = None
-
-    tasks_file_path = Path("docs/tasks.md")
-    success, message = update_task_status(tasks_file_path, task_number, completed, subtask_index)
-
-    return jsonify({"success": success, "message": message})
+@main_bp.errorhandler(500)
+def internal_error(e):
+    """Custom error handler for 500 errors."""
+    return render_template('error.html',
+                           error_code=500,
+                           error_message="Internal Server Error",
+                           error_description="An unexpected error occurred"), 500

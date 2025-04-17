@@ -12,13 +12,14 @@ def configure_security(app: Flask) -> None:
     def add_security_headers(response):
         """Add security headers to all responses."""
         # Content Security Policy
-        response.headers['Content-Security-Policy'] = (
+        response.headers['Content-Security-Policy-Report-Only '] = (
             "default-src 'self'; "
             "script-src 'self' https://cdn.jsdelivr.net; "
             "style-src 'self' https://cdn.jsdelivr.net; "
             "img-src 'self' data:; "
             "font-src 'self' https://cdn.jsdelivr.net; "
             "media-src 'self'"
+            "report-uri /csp-violation-report-endpoint"
         )
         
         # Prevent MIME type sniffing
