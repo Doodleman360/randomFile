@@ -1,5 +1,5 @@
 # Install:
-#    cp randomFile.service /lib/systemd/system
+#    sudo ln -s randomFile.service /lib/systemd/system/randomFile.service
 #    sudo systemctl daemon-reload
 #
 # Start on each boot:
@@ -19,9 +19,9 @@ After=systemd-timesyncd.service
 Environment=DISPLAY=:0
 Type=simple
 Restart=always
-User=pi
-WorkingDirectory=/home/pi/git/randomFile/
-ExecStart=/home/pi/git/randomFile/venv/bin/gunicorn -w 4 -m 007 --timeout 100000 --bind 127.0.0.1:8004 --reload app:app
+User=www-data
+WorkingDirectory=/var/www/git/randomFile/
+ExecStart=/venvs/venv-randomFile/bin/gunicorn -w 4 -m 007 --timeout 100000 --bind 127.0.0.1:8004 --reload app:app
 
 [Install]
 WantedBy=multi-user.target
